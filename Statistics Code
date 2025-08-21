@@ -277,7 +277,7 @@ dev.off()
 ggplot(data, aes(x = Site, y = F_RS)) +
   geom_boxplot(outlier.shape = NA) +   
   geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) + 
-  theme_minimal() +                      # Use a minimal theme
+  theme_minimal() +                      
   labs(title = "Percentage of Colonized Root System by Sampled Site",
        x = "Sites",
        y = "Frequency of Colonization")+
@@ -287,7 +287,7 @@ ggplot(data, aes(x = Site, y = F_RS)) +
 ggplot(data, aes(x = Type, y = F_RS)) +
   geom_boxplot(outlier.shape = NA) +   
   geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) + 
-  theme_minimal() +                      # Use a minimal theme
+  theme_minimal() +                      
   labs(title = "Percentage of Colonized Root System by Root Type",
        x = "Root Type",
        y = "Frequency of Colonization") +
@@ -345,7 +345,7 @@ ggplot(data, aes(x = Type, y = IC_RF)) +
 ggplot(data, aes(x = Site, y = VA_RS)) +
   geom_boxplot(outlier.shape = NA) +   
   geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) + 
-  theme_minimal() +                      # Use a minimal theme
+  theme_minimal() +                      
   labs(title = "Percentage of Vesicle Abundance in Root system by Sampled Site",
        x = "Sites",
        y = "Vesicle Abundance")
@@ -354,7 +354,7 @@ ggplot(data, aes(x = Site, y = VA_RS)) +
 ggplot(data, aes(x = Type, y = VA_RS)) +
   geom_boxplot(outlier.shape = NA) +   
   geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) + 
-  theme_minimal() +                      # Use a minimal theme
+  theme_minimal() +                     
   labs(title = "Percentage of Vesicle Abundance in Root System by Root Type",
        x = "Root Type",
        y = "Vesicle Abundance")
@@ -366,7 +366,7 @@ ggplot(data, aes(x = Type, y = VA_RS)) +
 ggplot(data, aes(x = Site, y = VA_RF)) +
   geom_boxplot(outlier.shape = NA) +   
   geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) + 
-  theme_minimal() +                      # Use a minimal theme
+  theme_minimal() +                     
   labs(title = "Percentage of Vesicle Abundance in Root Fragments by Sample Site",
        x = "Site",
        y = "Vesicle Abundance")
@@ -374,7 +374,7 @@ ggplot(data, aes(x = Site, y = VA_RF)) +
 ggplot(data, aes(x = Type, y = VA_RF)) +
   geom_boxplot(outlier.shape = NA) +   
   geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) + 
-  theme_minimal() +                      # Use a minimal theme
+  theme_minimal() +                     
   labs(title = "Percentage of Vesicle Abundance in Root Fragments by Root Type",
        x = "Root Type",
        y = "Vesicle Abundance")
@@ -385,7 +385,7 @@ ggplot(data, aes(x = Type, y = VA_RF)) +
 ggplot(data, aes(x = Site, y = AA_RF)) +
   geom_boxplot(outlier.shape = NA) +   
   geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) + 
-  theme_minimal() +                      # Use a minimal theme
+  theme_minimal() +                     
   labs(title = "Percentage of Arbuscule Abundance in Root Fragment by Sample Site",
        x = "Site",
        y = "Arbuscule Abundance")
@@ -393,7 +393,7 @@ ggplot(data, aes(x = Site, y = AA_RF)) +
 ggplot(data, aes(x = Type, y = AA_RF)) +
   geom_boxplot(outlier.shape = NA) +   
   geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) + 
-  theme_minimal() +                      # Use a minimal theme
+  theme_minimal() +                    
   labs(title = "Percentage of Arbuscule Abundance in Root Fragment by Root Type",
        x = "Root Type",
        y = "Arbuscule Abundance")
@@ -403,7 +403,7 @@ ggplot(data, aes(x = Type, y = AA_RF)) +
 ggplot(data, aes(x = Site, y = AA_RS)) +
   geom_boxplot(outlier.shape = NA) +   
   geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) + 
-  theme_minimal() +                      # Use a minimal theme
+  theme_minimal() +                      
   labs(title = "Percentage of Arbuscule Abundance in Root system by Sampled Site",
        x = "Sites",
        y = "Arbuscule Abundance")
@@ -412,7 +412,7 @@ ggplot(data, aes(x = Site, y = AA_RS)) +
 ggplot(data, aes(x = Type, y = AA_RS)) +
   geom_boxplot(outlier.shape = NA) +   
   geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) + 
-  theme_minimal() +                      # Use a minimal theme
+  theme_minimal() +                      
   labs(title = "Percentage of Arbuscule Abundance in Root system by Root Type",
        x = "Root Type",
        y = "Arbuscule Abundance")
@@ -424,7 +424,7 @@ ggplot(data, aes(x = Type, y = AA_RS)) +
 ggplot(data, aes(x = Site, y = F_RS)) +
   geom_boxplot(outlier.shape = NA) +   
   geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) + 
-  theme_minimal() +                      # Use a minimal theme
+  theme_minimal() +                    
   labs(title = "Percentage of Colonized Root System by Sampled Site",
        x = "Sites",
        y = "Frequency of Colonization")+
@@ -434,7 +434,7 @@ ggplot(data, aes(x = Site, y = F_RS)) +
 ggplot(data, aes(x = Type, y = F_RS)) +
   geom_boxplot(outlier.shape = NA) +   
   geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) + 
-  theme_minimal() +                      # Use a minimal theme
+  theme_minimal() +                     
   labs(title = "Percentage of Colonized Root System by Root Type",
        x = "Root Type",
        y = "Frequency of Colonization") +
@@ -492,7 +492,7 @@ ggplot(data, aes(x = Type, y = IC_RF)) +
 ggplot(data, aes(x = Site, y = VA_RS)) +
   geom_boxplot(outlier.shape = NA) +   
   geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) + 
-  theme_minimal() +                      # Use a minimal theme
+  theme_minimal() +                     
   labs(title = "Percentage of Vesicle Abundance in Root system by Sampled Site",
        x = "Sites",
        y = "Vesicle Abundance")
@@ -546,7 +546,7 @@ dev.off()
 ggplot(data, aes(x = Site, y = AA_RF)) +
   geom_boxplot(outlier.shape = NA) +   
   geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) + 
-  theme_minimal() +                      # Use a minimal theme
+  theme_minimal() +                     
   labs(title = "Percentage of Arbuscule Abundance in Root Fragment by Sample Site",
        x = "Site",
        y = "Arbuscule Abundance")
@@ -554,7 +554,7 @@ ggplot(data, aes(x = Site, y = AA_RF)) +
 ggplot(data, aes(x = Type, y = AA_RF)) +
   geom_boxplot(outlier.shape = NA) +   
   geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) + 
-  theme_minimal() +                      # Use a minimal theme
+  theme_minimal() +                     
   labs(title = "Percentage of Arbuscule Abundance in Root Fragment by Root Type",
        x = "Root Type",
        y = "Arbuscule Abundance")
@@ -564,7 +564,7 @@ ggplot(data, aes(x = Type, y = AA_RF)) +
 ggplot(data, aes(x = Site, y = AA_RS)) +
   geom_boxplot(outlier.shape = NA) +   
   geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) + 
-  theme_minimal() +                      # Use a minimal theme
+  theme_minimal() +                      
   labs(title = "Percentage of Arbuscule Abundance in Root system by Sampled Site",
        x = "Sites",
        y = "Arbuscule Abundance")
@@ -573,7 +573,7 @@ ggplot(data, aes(x = Site, y = AA_RS)) +
 ggplot(data, aes(x = Type, y = AA_RS)) +
   geom_boxplot(outlier.shape = NA) +   
   geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) + 
-  theme_minimal() +                      # Use a minimal theme
+  theme_minimal() +                     
   labs(title = "Percentage of Arbuscule Abundance in Root system by Root Type",
        x = "Root Type",
        y = "Arbuscule Abundance")
