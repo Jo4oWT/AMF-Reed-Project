@@ -1,0 +1,632 @@
+install.packages("rstatix")
+install.packages("dunn.test")
+install.packages("tidyverse")
+install.packages("ggsignif")
+install.packages("patchwork")
+
+
+library(dunn.test)
+library(tidyverse)
+library(rstatix)
+library(ggsignif)
+library(data.table)
+library(ggplot2)
+
+# Import data and check if imported properly
+
+
+data<-read.csv("AMF DATA/AMF_RESULTS_CSV_2.csv",header=T)
+
+show(data)
+
+summary(data)
+
+
+summary_by_site <- aggregate(VA_RF ~ Type, data = data, summary)
+print(summary_by_site)
+
+# Calculate average values for each subgroup
+avg_values <- data %>%
+  group_by(Site) %>%
+  summarize(avg_value = mean(F_RS))
+avg_values
+# Vector of column names to be tested
+columns_to_test <- c("F_RS","IC_RS", "IC_RF", "AA_RS", "AA_RF", "VA_RS", "VA_RF")
+
+# List of your numeric variables
+vars <- c("F_RS", "IC_RS", "IC_RF", "AA_RS", "AA_RF", "VA_RS", "VA_RF")
+
+# Apply Shapiro-Wilk normality test to each variable
+shapiro_results <- lapply(vars, function(var) {
+  result <- shapiro.test(data[[var]])
+  data.frame(
+    Variable = var,
+    W = result$statistic,
+    p_value = result$p.value
+  )
+})
+shapiro_df <- do.call(rbind, shapiro_results)
+print(shapiro_df)
+par(mfrow = c(3, 3))
+for (var in vars) {
+  qqnorm(data[[var]], main = paste("QQ Plot:", var))
+  qqline(data[[var]])
+}
+##Test for the variables per Type
+
+# Loop through each column and perform the tests
+for (column in columns_to_test) {
+  # Perform Kruskal-Wallis test
+  kruskal_result <- kruskal.test(data[[column]], data$Type)
+  
+  # Perform Dunn's test
+  dunn_result <- dunn.test(data[[column]], data$Type, method = "bonferroni")
+  
+  # Print  results
+  print(paste("Results for column:", column))
+  print(kruskal_result)
+  print(dunn_result)
+}
+
+##Test for the variables per Site
+
+# Loop through each column and perform the tests
+for (column in columns_to_test) {
+  # Perform Kruskal-Wallis test
+  kruskal_result2 <- kruskal.test(data[[column]], data$Site)
+  
+  # Perform Dunn's test
+  dunn_result2 <- dunn.test(data[[column]], data$Site, method = "bonferroni")
+  
+  # Print  results
+  print(paste("Results for column:", column))
+  print(kruskal_result2)
+  print(dunn_result2)
+}
+
+
+
+
+### sig graphs, automatically saved:-------------------------------------------------------------------------------------------------------
+
+setwd("C:/Users/jrafa/OneDrive/Ambiente de Trabalho/AMF_publication")
+
+
+
+#############################################################################################
+
+#######################################################################
+install.packages("ggpubr")
+library(ggplot2)
+library(patchwork)
+library(ggpubr)
+
+
+# Create significance data frames for each plot
+# === Site-based significance brackets ===
+sig_F_RS_site <- data.frame(
+  group1 = c("FL_III", "FL_III", "FL_III", "Se_I"),
+  group2 = c("Se_I", "Se_II", "So_II", "So_I"),
+  y.position = c(125, 128, 131, 134),
+  p.signif = c("*", "*", "*", "*")
+)
+
+sig_IC_RS_site <- data.frame(
+  group1 = c("FL_III", "FL_III"),
+  group2 = c("Se_I", "So_II"),
+  y.position = c(75, 78),
+  p.signif = c("*", "*")
+)
+
+sig_IC_RF_site <- data.frame(
+  group1 = c("FL_III", "FL_III"),
+  group2 = c("Se_I", "So_II"),
+  y.position = c(70, 73),
+  p.signif = c("*", "*")
+)
+
+sig_VA_RS_site <- data.frame(
+  group1 = c("FL_III"),
+  group2 = c("So_II"),
+  y.position = c(18),
+  p.signif = c("*")
+)
+
+# === Type-based significance brackets ===
+
+
+sig_F_RS_type <- data.frame(
+  group1 = c("Floating", "Floating", "Flooded"),
+  group2 = c("Dry", "Flooded", "Dry"),
+  y.position = c(125, 128, 131),
+  p.signif = c("*", "*", "*")
+)
+
+sig_IC_RS_type <- data.frame(
+  group1 = c("Floating", "Floating", "Flooded"),
+  group2 = c("Dry", "Flooded", "Dry"),
+  y.position = c(125, 128, 131),
+  p.signif = c("*", "*", "*")
+)
+
+sig_IC_RF_type <- data.frame(
+  group1 = c("Floating", "Floating"),
+  group2 = c("Dry", "Flooded"),
+  y.position = c(70, 73),
+  p.signif = c("*", "*")
+)
+
+sig_VA_RS_type <- data.frame(
+  group1 = c("Floating"),
+  group2 = c("Dry"),
+  y.position = c(18),
+  p.signif = c("*")
+)
+# === Create all plots with significance ===
+# By Site
+# Plot A
+p1 <- ggplot(data, aes(x = Site, y = F_RS)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) +
+  theme_minimal() +
+  labs(title = "Frequency of Colonization", x = "Site", y = "Colonization %") +
+  ylim(NA, 135) +
+  annotate("text", x = -Inf, y = Inf, label = "A", hjust = -0.5, vjust = 1.5, size = 5, fontface = "bold") +
+  stat_pvalue_manual(sig_F_RS_site, label = "p.signif", tip.length = 0.01)
+
+# Plot B
+p3 <- ggplot(data, aes(x = Site, y = IC_RS)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) +
+  theme_minimal() +
+  labs(title = "Intensity of Colonization in Root System", x = "Site", y = "Colonization Intensity %") +
+  ylim(NA, 85) +
+  annotate("text", x = -Inf, y = Inf, label = "B", hjust = -0.5, vjust = 1.5, size = 5, fontface = "bold") +
+  stat_pvalue_manual(sig_IC_RS_site, label = "p.signif", tip.length = 0.01)
+
+# Plot C
+p5 <- ggplot(data, aes(x = Site, y = IC_RF)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) +
+  theme_minimal() +
+  labs(title = "Intensity of Colonization in Root Fragments", x = "Site", y = "Colonization Intensity %") +
+  ylim(NA, 80) +
+  annotate("text", x = -Inf, y = Inf, label = "C", hjust = -0.5, vjust = 1.5, size = 5, fontface = "bold") +
+  stat_pvalue_manual(sig_IC_RF_site, label = "p.signif", tip.length = 0.01)
+
+# Plot D
+p7 <- ggplot(data, aes(x = Site, y = VA_RS)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) +
+  theme_minimal() +
+  labs(title = "Vesicle Abundance in Root System", x = "Site", y = "Vesicle Abundance %") +
+  ylim(NA, 20) +
+  annotate("text", x = -Inf, y = Inf, label = "D", hjust = -0.5, vjust = 1.5, size = 5, fontface = "bold") +
+  stat_pvalue_manual(sig_VA_RS_site, label = "p.signif", tip.length = 0.01)
+
+# Combine Site plots
+site_plot <- (p1 | p3) / (p5 | p7)
+
+# By Type
+# Plot A
+p2 <- ggplot(data, aes(x = Type, y = F_RS)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) +
+  theme_minimal() +
+  labs(title = "Frequency of Colonization", x = "Root Type", y = "Colonization %") +
+  ylim(NA, 135) +
+  annotate("text", x = -Inf, y = Inf, label = "A", hjust = -0.5, vjust = 1.5, size = 5, fontface = "bold") +
+  stat_pvalue_manual(sig_F_RS_type, label = "p.signif", tip.length = 0.01)
+
+# Plot B
+p4 <- ggplot(data, aes(x = Type, y = IC_RS)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) +
+  theme_minimal() +
+  labs(title = "Intensity of Colonization in Root System", x = "Root Type", y = "Colonization Intensity %") +
+  ylim(NA, 135) +
+  annotate("text", x = -Inf, y = Inf, label = "B", hjust = -0.5, vjust = 1.5, size = 5, fontface = "bold") +
+  stat_pvalue_manual(sig_IC_RS_type, label = "p.signif", tip.length = 0.01)
+
+# Plot C
+p6 <- ggplot(data, aes(x = Type, y = IC_RF)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) +
+  theme_minimal() +
+  labs(title = "Intensity of Colonization in Root Fragments", x = "Root Type", y = "Colonization Intensity %") +
+  ylim(NA, 85) +
+  annotate("text", x = -Inf, y = Inf, label = "C", hjust = -0.5, vjust = 1.5, size = 5, fontface = "bold") +
+  stat_pvalue_manual(sig_IC_RF_type, label = "p.signif", tip.length = 0.01)
+
+# Plot D
+p8 <- ggplot(data, aes(x = Type, y = VA_RS)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) +
+  theme_minimal() +
+  labs(title = "Vesicle Abundance in Root System", x = "Root Type", y = "Vesicle Abundance %") +
+  ylim(NA, 20) +
+  annotate("text", x = -Inf, y = Inf, label = "D", hjust = -0.5, vjust = 1.5, size = 5, fontface = "bold") +
+  stat_pvalue_manual(sig_VA_RS_type, label = "p.signif", tip.length = 0.01)
+
+
+# Combine Type plots
+type_plot <- (p2 | p4) / (p6 | p8)
+
+# Save TIFFs
+tiff("All_Plots_by_Site.tiff", width = 10, height = 8, units = "in", res = 300)
+print(site_plot)
+dev.off()
+
+tiff("All_Plots_by_Type.tiff", width = 10, height = 8, units = "in", res = 300)
+print(type_plot)
+dev.off()
+
+
+
+
+
+
+
+############################
+#----------------------------------------------------------
+###plots
+
+
+##Plots DV = F_RS for both Site (1) and Type (2)
+#(1):
+ggplot(data, aes(x = Site, y = F_RS)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) + 
+  theme_minimal() +                      # Use a minimal theme
+  labs(title = "Percentage of Colonized Root System by Sampled Site",
+       x = "Sites",
+       y = "Frequency of Colonization")+
+  
+  ylim(NA, 130)
+#(2):
+ggplot(data, aes(x = Type, y = F_RS)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) + 
+  theme_minimal() +                      # Use a minimal theme
+  labs(title = "Percentage of Colonized Root System by Root Type",
+       x = "Root Type",
+       y = "Frequency of Colonization") +
+  
+  ylim(NA, 110)
+
+
+
+
+##Plots DV = IC_RS for both Site (1) and Type (2)
+#(1):
+
+ggplot(data, aes(x = Site, y = IC_RS)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) + 
+  theme_minimal() +                     
+  labs(title = "Percentage of Colonization Intensity of Root System by Sampled Site",
+       x = "Sites",
+       y = "Colonization Intensity")+
+  
+  ylim(NA, 80)
+
+#(2):
+
+ggplot(data, aes(x = Type, y = IC_RS)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) + 
+  theme_minimal() +                     
+  labs(title = "Percentage of Colonization Intensity of Root System by Root Type",
+       x = "Root Type",
+       y = "Colonization Intensity")
+
+##Plots DV = IC_RF for both Site (1) and Type (2)
+#(1):
+
+ggplot(data, aes(x = Site, y = IC_RF)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) + 
+  theme_minimal() +                     
+  labs(title = "Percentage of Colonization Intensity of Root fragments by Sampled Site",
+       x = "Sites",
+       y = "Colonization Intensity")
+#(2):
+
+ggplot(data, aes(x = Type, y = IC_RF)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) + 
+  theme_minimal() +                     
+  labs(title = "Percentage of Colonization Intensity of Root fragments by Root Type",
+       x = "Root Type",
+       y = "Colonization Intensity")
+
+##Plots DV = VA_RS for both Site (1) and Type (2)
+#(1):
+ggplot(data, aes(x = Site, y = VA_RS)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) + 
+  theme_minimal() +                      # Use a minimal theme
+  labs(title = "Percentage of Vesicle Abundance in Root system by Sampled Site",
+       x = "Sites",
+       y = "Vesicle Abundance")
+
+#(2):
+ggplot(data, aes(x = Type, y = VA_RS)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) + 
+  theme_minimal() +                      # Use a minimal theme
+  labs(title = "Percentage of Vesicle Abundance in Root System by Root Type",
+       x = "Root Type",
+       y = "Vesicle Abundance")
+
+
+##Plots DV = VA_RF for both Site (1) and Type (2)
+
+#(2):
+ggplot(data, aes(x = Site, y = VA_RF)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) + 
+  theme_minimal() +                      # Use a minimal theme
+  labs(title = "Percentage of Vesicle Abundance in Root Fragments by Sample Site",
+       x = "Site",
+       y = "Vesicle Abundance")
+#(2):
+ggplot(data, aes(x = Type, y = VA_RF)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) + 
+  theme_minimal() +                      # Use a minimal theme
+  labs(title = "Percentage of Vesicle Abundance in Root Fragments by Root Type",
+       x = "Root Type",
+       y = "Vesicle Abundance")
+
+#Plot DV = AA_RF for both Site (1) and Type (2)
+#(2):
+
+ggplot(data, aes(x = Site, y = AA_RF)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) + 
+  theme_minimal() +                      # Use a minimal theme
+  labs(title = "Percentage of Arbuscule Abundance in Root Fragment by Sample Site",
+       x = "Site",
+       y = "Arbuscule Abundance")
+
+ggplot(data, aes(x = Type, y = AA_RF)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) + 
+  theme_minimal() +                      # Use a minimal theme
+  labs(title = "Percentage of Arbuscule Abundance in Root Fragment by Root Type",
+       x = "Root Type",
+       y = "Arbuscule Abundance")
+
+#Plot DV = AA_RS for both Site (1) and Type (2)
+#(1)
+ggplot(data, aes(x = Site, y = AA_RS)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) + 
+  theme_minimal() +                      # Use a minimal theme
+  labs(title = "Percentage of Arbuscule Abundance in Root system by Sampled Site",
+       x = "Sites",
+       y = "Arbuscule Abundance")
+
+#(2)
+ggplot(data, aes(x = Type, y = AA_RS)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) + 
+  theme_minimal() +                      # Use a minimal theme
+  labs(title = "Percentage of Arbuscule Abundance in Root system by Root Type",
+       x = "Root Type",
+       y = "Arbuscule Abundance")
+
+#comparing only the sites
+
+##Plots DV = F_RS for both Site (1) and Type (2)
+#(1):
+ggplot(data, aes(x = Site, y = F_RS)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) + 
+  theme_minimal() +                      # Use a minimal theme
+  labs(title = "Percentage of Colonized Root System by Sampled Site",
+       x = "Sites",
+       y = "Frequency of Colonization")+
+  
+  ylim(NA, 130)
+#(2):
+ggplot(data, aes(x = Type, y = F_RS)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) + 
+  theme_minimal() +                      # Use a minimal theme
+  labs(title = "Percentage of Colonized Root System by Root Type",
+       x = "Root Type",
+       y = "Frequency of Colonization") +
+  
+  ylim(NA, 110)
+
+
+
+
+##Plots DV = IC_RS for both Site (1) and Type (2)
+#(1):
+
+ggplot(data, aes(x = Site, y = IC_RS)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) + 
+  theme_minimal() +                     
+  labs(title = "Percentage of Colonization Intensity of Root System by Sampled Site",
+       x = "Sites",
+       y = "Colonization Intensity")+
+  
+  ylim(NA, 80)
+
+#(2):
+
+ggplot(data, aes(x = Type, y = IC_RS)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) + 
+  theme_minimal() +                     
+  labs(title = "Percentage of Colonization Intensity of Root System by Root Type",
+       x = "Root Type",
+       y = "Colonization Intensity")
+
+##Plots DV = IC_RF for both Site (1) and Type (2)
+#(1):
+
+ggplot(data, aes(x = Site, y = IC_RF)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) + 
+  theme_minimal() +                     
+  labs(title = "Percentage of Colonization Intensity of Root fragments by Sampled Site",
+       x = "Sites",
+       y = "Colonization Intensity")
+#(2):
+
+ggplot(data, aes(x = Type, y = IC_RF)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) + 
+  theme_minimal() +                     
+  labs(title = "Percentage of Colonization Intensity of Root fragments by Root Type",
+       x = "Root Type",
+       y = "Colonization Intensity")
+
+##Plots DV = VA_RS for both Site (1) and Type (2)
+#(1):
+ggplot(data, aes(x = Site, y = VA_RS)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) + 
+  theme_minimal() +                      # Use a minimal theme
+  labs(title = "Percentage of Vesicle Abundance in Root system by Sampled Site",
+       x = "Sites",
+       y = "Vesicle Abundance")
+
+#(2):
+ggplot(data, aes(x = Type, y = VA_RS)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) + 
+  theme_minimal() +                      # Use a minimal theme
+  labs(title = "Percentage of Vesicle Abundance in Root System by Root Type",
+       x = "Root Type",
+       y = "Vesicle Abundance")
+
+
+##Plots DV = VA_RF for both Site (1) and Type (2)
+
+# === Vesicle Abundance in Root Fragments ===
+
+p_VA_RF_site <- ggplot(data, aes(x = Site, y = VA_RF)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) + 
+  theme_minimal() +
+  labs(
+    title = "Vesicle Abundance in Root Fragments by Site",
+    x = "Site",
+    y = "Vesicle Abundance"
+  )
+
+p_VA_RF_type <- ggplot(data, aes(x = Type, y = VA_RF)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) + 
+  theme_minimal() +
+  labs(
+    title = "Vesicle Abundance in Root Fragments by Root Type",
+    x = "Root Type",
+    y = "Vesicle Abundance"
+  )
+
+# === Combine into 1x2 Layout ===
+vesicle_plot_RF <- p_VA_RF_site | p_VA_RF_type
+
+# === Save as TIFF ===
+tiff("Vesicle_Abundance_RF_Plots.tiff", width = 10, height = 5, units = "in", res = 300)
+print(vesicle_plot_RF)
+dev.off()
+
+
+#Plot DV = AA_RF for both Site (1) and Type (2)
+#(2):
+
+ggplot(data, aes(x = Site, y = AA_RF)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) + 
+  theme_minimal() +                      # Use a minimal theme
+  labs(title = "Percentage of Arbuscule Abundance in Root Fragment by Sample Site",
+       x = "Site",
+       y = "Arbuscule Abundance")
+
+ggplot(data, aes(x = Type, y = AA_RF)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) + 
+  theme_minimal() +                      # Use a minimal theme
+  labs(title = "Percentage of Arbuscule Abundance in Root Fragment by Root Type",
+       x = "Root Type",
+       y = "Arbuscule Abundance")
+
+#Plot DV = AA_RS for both Site (1) and Type (2)
+#(1)
+ggplot(data, aes(x = Site, y = AA_RS)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) + 
+  theme_minimal() +                      # Use a minimal theme
+  labs(title = "Percentage of Arbuscule Abundance in Root system by Sampled Site",
+       x = "Sites",
+       y = "Arbuscule Abundance")
+
+#(2)
+ggplot(data, aes(x = Type, y = AA_RS)) +
+  geom_boxplot(outlier.shape = NA) +   
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) + 
+  theme_minimal() +                      # Use a minimal theme
+  labs(title = "Percentage of Arbuscule Abundance in Root system by Root Type",
+       x = "Root Type",
+       y = "Arbuscule Abundance")
+
+
+# === Arbuscule Abundance in Root Fragments ===
+
+p_AA_RF_site <- ggplot(data, aes(x = Site, y = AA_RF)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) +
+  theme_minimal() +
+  labs(
+    title = "Arbuscule Abundance in Root Fragments by Site",
+    x = "Site",
+    y = "Arbuscule Abundance"
+  )
+
+p_AA_RF_type <- ggplot(data, aes(x = Type, y = AA_RF)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) +
+  theme_minimal() +
+  labs(
+    title = "Arbuscule Abundance in Root Fragments by Type",
+    x = "Root Type",
+    y = "Arbuscule Abundance"
+  )
+
+# === Arbuscule Abundance in Root Systems ===
+
+p_AA_RS_site <- ggplot(data, aes(x = Site, y = AA_RS)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Site)) +
+  theme_minimal() +
+  labs(
+    title = "Arbuscule Abundance in Root Systems by Site",
+    x = "Site",
+    y = "Arbuscule Abundance"
+  )
+
+p_AA_RS_type <- ggplot(data, aes(x = Type, y = AA_RS)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(width = 0.2, size = 1.5, aes(color = Type)) +
+  theme_minimal() +
+  labs(
+    title = "Arbuscule Abundance in Root Systems by Type",
+    x = "Root Type",
+    y = "Arbuscule Abundance"
+  )
+
+# === Combine into a 2x2 Layout ===
+arbuscule_plot <- (p_AA_RF_site | p_AA_RF_type) / (p_AA_RS_site | p_AA_RS_type)
+
+# === Optional: Save as TIFF ===
+tiff("Arbuscule_Abundance_Plots.tiff", width = 10, height = 8, units = "in", res = 300)
+print(arbuscule_plot)
+dev.off()
